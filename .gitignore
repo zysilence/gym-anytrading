@@ -7,3 +7,5 @@ venv*/
 dist/
 *.egg-info/
 build/
+
+tensorboard_log/
