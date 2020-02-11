@@ -64,11 +64,15 @@ def callback(locals_, globals_):
         self_.is_tb_set = True
     """
     # Log scalar value (here a random variable)
-    total_reward = env._total_reward
-    total_profit = env._total_profit
-    summary = tf.Summary(value=[tf.Summary.Value(tag='total reward', simple_value=total_reward),
-                                tf.Summary.Value(tag='total profit', simple_value=total_profit)])
-    locals_['writer'].add_summary(summary, self_.num_timesteps)
+    masks = locals_['masks']
+    dones_idx = np.sort(np.argwhere(masks))
+    # Log when episode ends
+    if len(dones_idx) != 0:
+        total_reward = env._total_reward
+        total_profit = env._total_profit
+        summary = tf.Summary(value=[tf.Summary.Value(tag='total reward', simple_value=total_reward),
+                                    tf.Summary.Value(tag='total profit', simple_value=total_profit)])
+        locals_['writer'].add_summary(summary, self_.num_timesteps)
     return True
 
 
@@ -89,7 +93,7 @@ if __name__ == '__main__':
     observation = env.reset()
     model = PPO2(CustomCnnPolicy, env, verbose=0, tensorboard_log="./tensorboard_log/")
     # model = DQN(MlpPolicy, env, verbose=1)
-    model.learn(total_timesteps=500000, tb_log_name="PPO2_Cnn", callback=callback)
+    model.learn(total_timesteps=200000, tb_log_name="PPO2_Cnn", callback=callback)
 
     observation = env.reset()
     # Test
