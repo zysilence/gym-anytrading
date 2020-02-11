@@ -64,15 +64,17 @@ def callback(locals_, globals_):
         self_.is_tb_set = True
     """
     # Log scalar value (here a random variable)
-    masks = locals_['masks']
-    dones_idx = np.sort(np.argwhere(masks))
+    summary_idx = env._summary_idx
+    history_idx = env._history_idx
     # Log when episode ends
-    if len(dones_idx) != 0:
-        total_reward = env._total_reward
-        total_profit = env._total_profit
-        summary = tf.Summary(value=[tf.Summary.Value(tag='total reward', simple_value=total_reward),
-                                    tf.Summary.Value(tag='total profit', simple_value=total_profit)])
-        locals_['writer'].add_summary(summary, self_.num_timesteps)
+    if summary_idx < history_idx:
+        for i in range(summary_idx + 1, history_idx + 1):
+            total_reward = env._reward_history[i]
+            total_profit = env._profit_history[i]
+            summary = tf.Summary(value=[tf.Summary.Value(tag='total reward', simple_value=total_reward),
+                                        tf.Summary.Value(tag='total profit', simple_value=total_profit)])
+            locals_['writer'].add_summary(summary, self_.num_timesteps)
+        env._summary_idx = env._history_idx
     return True
 
 
