@@ -31,7 +31,10 @@ def get_observation(self):
     return observation
 
 
-def calculate_reward(self, action):
+def calculate_reward_per_step(self, action):
+    """
+    Return reward every step.
+    """
     step_reward = 0
 
     current_price = self.prices[self._current_tick]
@@ -39,14 +42,43 @@ def calculate_reward(self, action):
     price_diff = current_price / prev_price
 
     if action == Actions.Buy.value:
-        step_reward += price_diff - 1
+        step_reward += price_diff - 1 - self.trade_fee_bid_percent - self.trade_fee_ask_percent
     elif action == Actions.Sell.value:
-        step_reward += 1 - price_diff
+        step_reward += 1 - price_diff - self.trade_fee_bid_percent - self.trade_fee_ask_percent
 
     return step_reward
 
 
-def update_profit(self, action):
+def calculate_reward_per_trade(self, action):
+    """
+    Return reward per trade, otherwise zero. The per trade reward is proportional to the per trade profit.
+    This reward function is better than the per step one.
+    """
+    reward = 0
+    trade = False
+
+    if ((action == Actions.Buy.value and self._position == Positions.Short) or
+            (action == Actions.Sell.value and self._position == Positions.Long)):
+        trade = True
+
+    if trade or self._done:
+        current_price = self.prices[self._current_tick]
+        last_trade_price = self.prices[self._last_trade_tick]
+
+        if self._position == Positions.Long:
+            reward = current_price / last_trade_price - 1 - self.trade_fee_bid_percent - self.trade_fee_ask_percent
+    # debug
+    if reward != 0:
+        reward += 0
+        reward += 0
+
+    return reward
+
+
+def update_profit_accumulated(self, action):
+    """
+    Use all the money in each trade.
+    """
     trade = False
     if ((action == Actions.Buy.value and self._position == Positions.Short) or
             (action == Actions.Sell.value and self._position == Positions.Long)):
@@ -64,17 +96,38 @@ def update_profit(self, action):
             self._profit_history[self._history_idx % self._history_len] = self._total_profit
 
 
+def update_profit(self, action):
+    """
+    Use fixed amount of money in each trade.
+    """
+    trade = False
+    if ((action == Actions.Buy.value and self._position == Positions.Short) or
+            (action == Actions.Sell.value and self._position == Positions.Long)):
+        trade = True
+
+    if trade or self._done:
+        current_price = self.prices[self._current_tick]
+        last_trade_price = self.prices[self._last_trade_tick]
+
+        if self._position == Positions.Long:
+            self._total_profit += current_price / last_trade_price - 1 \
+                                  - self.trade_fee_bid_percent - self.trade_fee_ask_percent
+        # [sfan] added
+        if self._done is True:
+            self._profit_history[self._history_idx % self._history_len] = self._total_profit
+
+
 class MyStockEnv(StocksEnv):
     def __init__(self, df, window_size, frame_bound):
         super().__init__(df, window_size, frame_bound)
-        # No fee first for debug
+        # No fee for debug
         self.trade_fee_bid_percent = 0  # unit
-        self.trade_fee_ask_percent = 0  # unit
+        self.trade_fee_ask_percent = 0.005  # unit
         self.max_episode_length = 20
 
     _process_data = process_data
     _get_observation = get_observation
-    _calculate_reward = calculate_reward
+    _calculate_reward = calculate_reward_per_trade
     _update_profit = update_profit
 
 
