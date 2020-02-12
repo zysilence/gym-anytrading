@@ -1,3 +1,7 @@
+""" Main file with entry point.
+Author: sfan
+"""
+
 import gym
 import gym_anytrading
 from gym_anytrading.envs import TradingEnv, ForexEnv, StocksEnv, MyStockEnv

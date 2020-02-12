@@ -1,3 +1,7 @@
+""" Customized environment use CWT as feature extraction.
+Author: sfan
+"""
+
 from collections import defaultdict, Counter
 
 from gym import spaces

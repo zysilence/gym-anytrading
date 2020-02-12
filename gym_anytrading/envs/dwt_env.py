@@ -1,3 +1,7 @@
+""" Customized environment use DWT as feature extraction.
+Author: sfan
+"""
+
 from collections import defaultdict, Counter
 
 from gym import spaces
