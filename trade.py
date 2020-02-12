@@ -88,13 +88,14 @@ if __name__ == '__main__':
     train_test_split = 0.8
     df_data = STOCKS_GOOGL
 
+    split_idx = int(len(df_data) * train_test_split)
     total_bound = (window_size, len(df_data))
-    train_bound = (window_size, len(df_data) * train_test_split)
-    test_bound = (len(df_data) * train_test_split + 1, len(df_data))
+    train_bound = (window_size, split_idx)
+    test_bound = (split_idx, len(df_data))
 
     # Train
     env = MyStockEnv(df=df_data,
-                     frame_bound=total_bound,
+                     frame_bound=train_bound,
                      window_size=window_size)
     # env = gym.make('forex-v0', frame_bound=(10, len(FOREX_EURUSD_1H_ASK)), window_size=10)
     observation = env.reset()
@@ -102,6 +103,9 @@ if __name__ == '__main__':
     # model = DQN(MlpPolicy, env, verbose=1)
     model.learn(total_timesteps=2000000, tb_log_name="PPO2_Cnn", callback=callback)
 
+    env = MyStockEnv(df=df_data,
+                     frame_bound=test_bound,
+                     window_size=window_size)
     observation = env.reset()
     # Test
     while True:
