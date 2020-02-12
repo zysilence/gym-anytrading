@@ -66,11 +66,12 @@ def callback(locals_, globals_):
     # Log scalar value (here a random variable)
     summary_idx = env._summary_idx
     history_idx = env._history_idx
+    history_len = env._history_len
     # Log when episode ends
     if summary_idx < history_idx:
         for i in range(summary_idx + 1, history_idx + 1):
-            total_reward = env._reward_history[i]
-            total_profit = env._profit_history[i]
+            total_reward = env._reward_history[i % history_len]
+            total_profit = env._profit_history[i % history_len]
             summary = tf.Summary(value=[tf.Summary.Value(tag='total reward', simple_value=total_reward),
                                         tf.Summary.Value(tag='total profit', simple_value=total_profit)])
             locals_['writer'].add_summary(summary, self_.num_timesteps)
@@ -95,7 +96,7 @@ if __name__ == '__main__':
     observation = env.reset()
     model = PPO2(CustomCnnPolicy, env, verbose=0, tensorboard_log="./tensorboard_log/")
     # model = DQN(MlpPolicy, env, verbose=1)
-    model.learn(total_timesteps=200000, tb_log_name="PPO2_Cnn", callback=callback)
+    model.learn(total_timesteps=2000000, tb_log_name="PPO2_Cnn", callback=callback)
 
     observation = env.reset()
     # Test

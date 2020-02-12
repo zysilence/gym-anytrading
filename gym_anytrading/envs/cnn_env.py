@@ -61,15 +61,15 @@ def update_profit(self, action):
             self._total_profit = (shares * (1 - self.trade_fee_bid_percent)) * current_price
         # [sfan] added
         if self._done is True:
-            self._profit_history[self._history_idx] = self._total_profit
+            self._profit_history[self._history_idx % self._history_len] = self._total_profit
 
 
 class MyStockEnv(StocksEnv):
     def __init__(self, df, window_size, frame_bound):
         super().__init__(df, window_size, frame_bound)
+        # No fee first for debug
         self.trade_fee_bid_percent = 0  # unit
-        self.trade_fee_ask_percent = 0.005  # unit
-
+        self.trade_fee_ask_percent = 0  # unit
         self.max_episode_length = 20
 
     _process_data = process_data

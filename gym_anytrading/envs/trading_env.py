@@ -52,9 +52,9 @@ class TradingEnv(gym.Env):
         self._first_rendering = None
 
         # [sfan] added
-        history_len = 100
-        self._reward_history = [0] * history_len
-        self._profit_history = [1] * history_len
+        self._history_len = 100
+        self._reward_history = [0] * self._history_len
+        self._profit_history = [1] * self._history_len
         self._history_idx = -1
         self._summary_idx = -1
 
@@ -89,7 +89,7 @@ class TradingEnv(gym.Env):
         # [sfan] added
         if self._done is True:
             self._history_idx += 1
-            self._reward_history[self._history_idx] = self._total_reward
+            self._reward_history[self._history_idx % self._history_len] = self._total_reward
 
         self._update_profit(action)
 
