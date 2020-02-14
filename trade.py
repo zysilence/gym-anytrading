@@ -2,6 +2,8 @@
 Author: sfan
 """
 
+import time
+
 import gym
 import gym_anytrading
 from gym_anytrading.envs import TradingEnv, ForexEnv, StocksEnv, MyStockEnv
@@ -105,6 +107,8 @@ def callback(locals_, globals_):
 
 
 if __name__ == '__main__':
+    start = time.time()
+
     window_size = 120
     train_test_split = 0.8
     df_data = STOCKS_GOOGL
@@ -136,6 +140,9 @@ if __name__ == '__main__':
         if done:
             print("info:", info)
             break
+
+    end = time.time()
+    print('Elapsed time: {} s'.format(end - start))
 
     plt.cla()
     env.render_all()
