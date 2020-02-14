@@ -22,7 +22,10 @@ def process_data(env):
 
     log_diff = np.log(original) - np.log(original.shift(1))
     log_diff = log_diff.fillna(method='bfill').to_numpy()
+    # Figure size: [window_size, 1], 4 featrue map
     log_diff = log_diff.reshape((log_diff.shape[0], 1, log_diff.shape[1]))
+    # Figure size: [window_size, 4], 1 featrue map
+    # log_diff = log_diff.reshape((log_diff.shape[0], log_diff.shape[1], 1))
 
     signal_features = log_diff
 
