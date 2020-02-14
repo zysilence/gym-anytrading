@@ -116,7 +116,7 @@ class TradingEnv(gym.Env):
         return self.signal_features[(self._current_tick-self.window_size):self._current_tick]
 
 
-    def render(self, mode='human'):
+    def render(self, mode='human', title=''):
 
         def _plot_position(position, tick):
             color = None
@@ -136,7 +136,11 @@ class TradingEnv(gym.Env):
 
         _plot_position(self._position, self._current_tick)
 
+        # [sfan] add `title` as prefix of the subtitle
+        if title:
+            title = title + '\n'
         plt.suptitle(
+            title +
             "Total Reward: %.6f" % self._total_reward + ' ~ ' +
             "Total Profit: %.6f" % self._total_profit
         )
@@ -144,7 +148,7 @@ class TradingEnv(gym.Env):
         plt.pause(0.01)
 
 
-    def render_all(self, mode='human'):
+    def render_all(self, mode='human', title=''):
         window_ticks = np.arange(len(self.prices))
         plt.plot(self.prices)
 
@@ -159,7 +163,11 @@ class TradingEnv(gym.Env):
         plt.plot(short_ticks, self.prices[short_ticks], 'ro')
         plt.plot(long_ticks, self.prices[long_ticks], 'go')
 
+        # [sfan] add `title` as prefix of the subtitle
+        if title:
+            title = title + '\n'
         plt.suptitle(
+            title +
             "Total Reward: %.6f" % self._total_reward + ' ~ ' +
             "Total Profit: %.6f" % self._total_profit
         )

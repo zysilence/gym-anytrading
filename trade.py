@@ -67,9 +67,10 @@ def custom_cnn_with_dropout(scaled_images, **kwargs):
     layer_2 = activ(conv(layer_1, 'c2', n_filters=16, filter_size=(4, 1), stride=2, init_scale=np.sqrt(2), **kwargs))
     layer_3 = activ(conv(layer_2, 'c3', n_filters=32, filter_size=(3, 1), stride=1, init_scale=np.sqrt(2), **kwargs))
     layer_3 = conv_to_fc(layer_3)
+    layer_3 = tf.nn.dropout(layer_3, keep_prob=0.2)
     layer_4 = activ(linear(layer_3, 'fc1', n_hidden=64, init_scale=np.sqrt(2)))
     layer_5 = tf.nn.dropout(layer_4, keep_prob=0.5)
-    output = activ(linear(layer_5, 'fc1', n_hidden=32, init_scale=np.sqrt(2)))
+    output = activ(linear(layer_5, 'fc2', n_hidden=64, init_scale=np.sqrt(2)))
     return output
 
 
@@ -109,6 +110,8 @@ def callback(locals_, globals_):
 if __name__ == '__main__':
     start = time.time()
 
+    tb_log_name = 'PPO2_Cnn'
+
     window_size = 120
     train_test_split = 0.8
     df_data = STOCKS_GOOGL
@@ -126,7 +129,10 @@ if __name__ == '__main__':
     observation = env.reset()
     model = PPO2(CustomCnnPolicy, env, verbose=0, tensorboard_log="./tensorboard_log/")
     # model = DQN(MlpPolicy, env, verbose=1)
-    model.learn(total_timesteps=2000000, tb_log_name="PPO2_Cnn", callback=callback)
+    print('=' * 50)
+    print('Model trainging: {}'.format(tb_log_name))
+    print('=' * 50)
+    model.learn(total_timesteps=2000000, tb_log_name=tb_log_name, callback=callback)
 
     env = MyStockEnv(df=df_data,
                      frame_bound=test_bound,
@@ -145,5 +151,5 @@ if __name__ == '__main__':
     print('Elapsed time: {} s'.format(end - start))
 
     plt.cla()
-    env.render_all()
+    env.render_all(title=tb_log_name)
     plt.show()
