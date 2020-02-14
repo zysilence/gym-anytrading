@@ -5,6 +5,7 @@ Author: sfan
 from collections import defaultdict, Counter
 
 from gym import spaces
+import matplotlib.pyplot as plt
 import numpy as np
 import pywt
 import scipy.stats
@@ -25,13 +26,21 @@ def process_data(env):
 
     signal_features = log_diff
 
+    """
+    signal_features = original.to_numpy()
+    signal_features = signal_features.reshape((signal_features.shape[0], 1, signal_features.shape[1]))
+    """
+
     return prices, signal_features
 
 
 def get_observation(self):
     observation = self.signal_features[(self._current_tick-self.window_size):self._current_tick]
-    observation = observation.reshape((1, observation.shape[0], 1, observation.shape[2]))
+    # observation = np.log(observation / observation[0][0])
+    observation = observation.reshape((1, observation.shape[0], observation.shape[1], observation.shape[2]))
 
+    # plt.cla()
+    # plt.plot(observation[0, :, 0, 0])
     return observation
 
 
