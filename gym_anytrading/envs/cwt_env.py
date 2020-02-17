@@ -5,6 +5,7 @@ Author: sfan
 from collections import defaultdict, Counter
 
 from gym import spaces
+import matplotlib.pyplot as plt
 import numpy as np
 import pywt
 import scipy.stats
@@ -31,6 +32,8 @@ def get_cwt_features(dataset, env):
                 signal[signal_start: env.window_size] = dataset[data_start: i, j]
             if signal[0] != 0:
                 signal = signal / signal[0]
+                # plt.cla()
+                # plt.plot(signal)
             coeff, freq = pywt.cwt(signal, scales, waveletname, 1)
             features[i, :, :, j] = coeff[:, :figure_size]
 
@@ -47,7 +50,7 @@ def process_data(env):
     log_diff = np.log(original) - np.log(original.shift(1))
     log_diff = log_diff.fillna(method='bfill').to_numpy()
     """
-    cwt_features = get_cwt_features(original, env)
+    cwt_features = get_cwt_features(original.to_numpy(), env)
     signal_features = cwt_features
 
     return prices, signal_features
