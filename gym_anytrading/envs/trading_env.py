@@ -33,7 +33,9 @@ class TradingEnv(gym.Env):
         # sfan: for mlp or LSTM
         # self.shape = (window_size, self.signal_features.shape[1])
         # sfan: for cnn
-        self.shape = (window_size, self.signal_features.shape[1], self.signal_features.shape[2])
+        # self.shape = (window_size, self.signal_features.shape[1], self.signal_features.shape[2])
+        # sfan: for cnn_cwt
+        self.shape = (self.signal_features.shape[1], self.signal_features.shape[2], self.signal_features.shape[3])
 
         # spaces
         self.action_space = spaces.Discrete(len(Actions))

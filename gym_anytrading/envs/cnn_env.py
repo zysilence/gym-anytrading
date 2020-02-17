@@ -133,7 +133,7 @@ def update_profit(self, action):
             self._profit_history[self._history_idx % self._history_len] = self._total_profit
 
 
-class MyStockEnv(StocksEnv):
+class MyStockCnnEnv(StocksEnv):
     def __init__(self, df, window_size, frame_bound):
         super().__init__(df, window_size, frame_bound)
         # No fee for debug
