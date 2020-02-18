@@ -127,9 +127,10 @@ def callback(locals_, globals_):
 if __name__ == '__main__':
     start = time.time()
 
-    tb_log_name = 'PPO2_Cnn_Cwt'
+    tb_log_name = 'PPO2_Cnn_Cwt_win60'
+    model_path = './model/{}'.format(tb_log_name)
 
-    window_size = 30
+    window_size = 60
     train_test_split = 0.8
     df_data = STOCKS_GOOGL
 
@@ -150,16 +151,29 @@ if __name__ == '__main__':
     print('Model trainging: {}'.format(tb_log_name))
     print('=' * 50)
     model.learn(total_timesteps=5000000, tb_log_name=tb_log_name, callback=callback)
+    model.save(model_path)
 
     env = MyStockCwtEnv(df=df_data,
                      frame_bound=test_bound,
                      window_size=window_size)
     observation = env.reset()
+    model = PPO2.load(model_path)
+
+    process_end = time.time()
+    print('=' * 50)
+    print('Data processing time: {}'.format(process_end - start))
+
+    print('=' * 50)
+    print('Model Testing: {}'.format(tb_log_name))
+    print('=' * 50)
     # Test
+    step = 0
     while True:
-        action, _ = model.predict(observation)
+        step += 1
+        action, _ = model.predict(observation, deterministic=True)
         observation, reward, done, info = env.step(action)
         # env.render()
+        print('Step {}, profit {}'.format(step, info.get('total_profit')))
         if done:
             print("info:", info)
             break
