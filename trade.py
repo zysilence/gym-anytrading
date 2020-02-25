@@ -127,12 +127,13 @@ def callback(locals_, globals_):
 if __name__ == '__main__':
     start = time.time()
 
-    tb_log_name = 'PPO2_Cnn_Cwt_win60'
+    tb_log_name = 'PPO2_CwtCnn_win60_GOOGLE'
     model_path = './model/{}'.format(tb_log_name)
 
     window_size = 60
     train_test_split = 0.8
     df_data = STOCKS_GOOGL
+    # df_data = FOREX_EURUSD_1H_ASK
 
     split_idx = int(len(df_data) * train_test_split)
     total_bound = (window_size, len(df_data))
@@ -141,8 +142,8 @@ if __name__ == '__main__':
 
     # Train
     env = MyStockCwtEnv(df=df_data,
-                     frame_bound=train_bound,
-                     window_size=window_size)
+                        frame_bound=train_bound,
+                        window_size=window_size)
     # env = gym.make('forex-v0', frame_bound=(10, len(FOREX_EURUSD_1H_ASK)), window_size=10)
     observation = env.reset()
     model = PPO2(CustomCnnPolicy, env, verbose=0, tensorboard_log="./tensorboard_log/")
@@ -154,8 +155,8 @@ if __name__ == '__main__':
     model.save(model_path)
 
     env = MyStockCwtEnv(df=df_data,
-                     frame_bound=test_bound,
-                     window_size=window_size)
+                        frame_bound=test_bound,
+                        window_size=window_size)
     observation = env.reset()
     model = PPO2.load(model_path)
 
@@ -173,7 +174,7 @@ if __name__ == '__main__':
         action, _ = model.predict(observation, deterministic=True)
         observation, reward, done, info = env.step(action)
         # env.render()
-        print('Step {}, profit {}'.format(step, info.get('total_profit')))
+        # print('Step {}, profit {}'.format(step, info.get('total_profit')))
         if done:
             print("info:", info)
             break
