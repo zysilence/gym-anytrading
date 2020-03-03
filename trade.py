@@ -138,7 +138,7 @@ if __name__ == '__main__':
     split_idx = int(len(df_data) * train_test_split)
     total_bound = (window_size, len(df_data))
     train_bound = (window_size, split_idx)
-    test_bound = (split_idx, len(df_data))
+    test_bound = (split_idx - window_size, len(df_data))
 
     # Train
     env = MyStockCwtEnv(df=df_data,
