@@ -8,6 +8,7 @@ import gym
 import gym_anytrading
 from gym_anytrading.envs import TradingEnv, ForexEnv, StocksEnv, MyStockCnnEnv, MyStockCwtEnv
 from gym_anytrading.datasets import FOREX_EURUSD_1H_ASK, STOCKS_GOOGL
+from gym_anytrading.datasets import XAUUSD_1H, XAUUSD_4H, XAUUSD_1D
 import matplotlib.pyplot as plt
 
 from stable_baselines.common.policies import MlpPolicy, CnnPolicy, FeedForwardPolicy
@@ -94,7 +95,7 @@ def custom_cnn_for_cwt(scaled_images, **kwargs):
 class CustomCnnPolicy(FeedForwardPolicy):
     def __init__(self, sess, ob_space, ac_space, n_env, n_steps, n_batch, reuse=False, **_kwargs):
         super(CustomCnnPolicy, self).__init__(sess, ob_space, ac_space, n_env, n_steps, n_batch, reuse,
-                                              cnn_extractor=custom_cnn_for_cwt,
+                                              cnn_extractor=custom_cnn,
                                               feature_extraction="cnn", **_kwargs)
 
 
@@ -127,12 +128,12 @@ def callback(locals_, globals_):
 if __name__ == '__main__':
     start = time.time()
 
-    tb_log_name = 'PPO2_CwtCnn_win60_GOOGLE'
+    tb_log_name = 'PPO2_Cnn_win60_XAUUSD_4H'
     model_path = './model/{}'.format(tb_log_name)
 
     window_size = 60
     train_test_split = 0.8
-    df_data = STOCKS_GOOGL
+    df_data = XAUUSD_4H
     # df_data = FOREX_EURUSD_1H_ASK
 
     split_idx = int(len(df_data) * train_test_split)
@@ -141,7 +142,7 @@ if __name__ == '__main__':
     test_bound = (split_idx - window_size, len(df_data))
 
     # Train
-    env = MyStockCwtEnv(df=df_data,
+    env = MyStockCnnEnv(df=df_data,
                         frame_bound=train_bound,
                         window_size=window_size)
     # env = gym.make('forex-v0', frame_bound=(10, len(FOREX_EURUSD_1H_ASK)), window_size=10)
@@ -151,10 +152,10 @@ if __name__ == '__main__':
     print('=' * 50)
     print('Model trainging: {}'.format(tb_log_name))
     print('=' * 50)
-    model.learn(total_timesteps=5000000, tb_log_name=tb_log_name, callback=callback)
+    model.learn(total_timesteps=50000000, tb_log_name=tb_log_name, callback=callback)
     model.save(model_path)
 
-    env = MyStockCwtEnv(df=df_data,
+    env = MyStockCnnEnv(df=df_data,
                         frame_bound=test_bound,
                         window_size=window_size)
     observation = env.reset()

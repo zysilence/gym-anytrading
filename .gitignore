@@ -10,3 +10,7 @@ build/
 
 tensorboard_log/
 model/
+gym_anytrading/datasets/data/EURUSD.csv
+gym_anytrading/datasets/data/EURUSD_1T.csv
+gym_anytrading/datasets/data/XAUUSD.csv
+gym_anytrading/datasets/data/XAUUSD_1T.csv
