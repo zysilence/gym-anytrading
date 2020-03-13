@@ -128,7 +128,7 @@ def callback(locals_, globals_):
 if __name__ == '__main__':
     start = time.time()
 
-    tb_log_name = 'PPO2_Cnn_win60_XAUUSD_4H'
+    tb_log_name = 'PPO2_Cnn_win60_XAUUSD_4H_Nofee'
     model_path = './model/{}'.format(tb_log_name)
 
     window_size = 60
@@ -152,7 +152,7 @@ if __name__ == '__main__':
     print('=' * 50)
     print('Model trainging: {}'.format(tb_log_name))
     print('=' * 50)
-    model.learn(total_timesteps=50000000, tb_log_name=tb_log_name, callback=callback)
+    model.learn(total_timesteps=10000000, tb_log_name=tb_log_name, callback=callback)
     model.save(model_path)
 
     env = MyStockCnnEnv(df=df_data,

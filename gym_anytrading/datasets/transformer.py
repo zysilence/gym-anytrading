@@ -46,7 +46,8 @@ if __name__ == '__main__':
     # df_out['Time'] = df_out.index.view('int64') // 1e9
     df_out['Time'] = df_out.index
     # df_out['Time'] = df['Time']
-    df_out = df_out.fillna(method='ffill')
+    # df_out = df_out.fillna(method='ffill')
+    df_out = df_out.dropna(subset=['Time', 'Open', 'High', 'Low', 'Close', 'Volume'])
 
     output_path = os.path.join(os.path.dirname(__file__), 'data', output)
     df_out.to_csv(output_path, index=0)

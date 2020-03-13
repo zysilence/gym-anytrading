@@ -138,7 +138,7 @@ class MyStockCnnEnv(StocksEnv):
         super().__init__(df, window_size, frame_bound)
         # No fee for debug
         self.trade_fee_bid_percent = 0  # unit
-        self.trade_fee_ask_percent = 0.005  # unit
+        self.trade_fee_ask_percent = 0  # unit
         self.max_episode_length = 20
 
     _process_data = process_data
